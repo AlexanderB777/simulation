@@ -53,6 +53,8 @@ public class Game {
         }
     }
 
+
+
     private void setCreaturesRandom() {
         int herbivores = 5;
         int predators = 5;
