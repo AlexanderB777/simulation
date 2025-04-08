@@ -81,5 +81,4 @@ public class Game {
     public Entity getCell(int row, int col) {
         return field[row][col];
     }
-
 }
