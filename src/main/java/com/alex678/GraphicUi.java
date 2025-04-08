@@ -15,17 +15,21 @@ public class GraphicUi {
     private HBox buttonBox;
     private Button button1;
     private Button button2;
+    private final String cellStyle =
+            "-fx-border-color: black; " +
+            "-fx-background-color: white; " +
+            "-fx-border-width: 0.3";
 
     public GraphicUi() {
         root = new VBox();
         text = new Text("Игровое поле");
         grid = new GridPane();
-        board = new StackPane[20][50];
-        for (int row = 0; row < 20; row++) {
-            for (int col = 0; col < 50; col++) {
+        board = new StackPane[10][25];
+        for (int row = 0; row < 10; row++) {
+            for (int col = 0; col < 25; col++) {
                 StackPane cell = new StackPane();
-                cell.setStyle("-fx-border-color: black; -fx-background-color: white;");
-                cell.setPrefSize(20, 20);
+                cell.setStyle(cellStyle);
+                cell.setPrefSize(40, 40);
                 board[row][col] = cell;
                 grid.add(cell, col, row);
             }
