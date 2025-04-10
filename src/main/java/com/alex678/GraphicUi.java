@@ -33,6 +33,7 @@ public class GraphicUi {
                     "-fx-background-color: white; " +
                     "-fx-border-width: 0.3";
 
+
     public GraphicUi() {
         root = new VBox();
         text = new Text("Игровое поле");
