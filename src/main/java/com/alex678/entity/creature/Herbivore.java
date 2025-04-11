@@ -22,7 +22,7 @@ public final class Herbivore extends Creature implements Spawnable {
     public Location getNewLocation(World world) {
         List<PathFinder.Point> path = PathFinder.findPath(world, location, Grass.class, getToAvoid());
         if (path != null && path.size() > 1) {
-            return path.get(1).getLocation();
+            return path.get(1).location();
         }
         return null;
     }

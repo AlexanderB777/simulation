@@ -2,7 +2,6 @@ package com.alex678;
 
 import com.alex678.entity.Entity;
 import com.alex678.entity.Location;
-import com.alex678.entity.creature.Creature;
 import javafx.animation.TranslateTransition;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -29,10 +28,12 @@ public class GraphicUi {
     private final Button button2;
     @Getter
     private final Button button3;
-    private final String cellStyle =
+    private static final String CELL_STYLE =
             "-fx-border-color: black; " +
                     "-fx-background-color: white; " +
                     "-fx-border-width: 0.3";
+    private static final double CELL_SIZE = 40;
+    private static final double IMAGE_SIZE = 36;
 
 
     public GraphicUi() {
@@ -44,8 +45,8 @@ public class GraphicUi {
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 25; col++) {
                 StackPane cell = new StackPane();
-                cell.setStyle(cellStyle);
-                cell.setPrefSize(40, 40);
+                cell.setStyle(CELL_STYLE);
+                cell.setPrefSize(CELL_SIZE, CELL_SIZE);
                 board[row][col] = cell;
                 grid.add(cell, col, row);
             }
@@ -77,8 +78,8 @@ public class GraphicUi {
         Location location = entity.getLocation();
         StackPane cell = getCell(location);
         ImageView imageView = new ImageView(entity.getImage());
-        imageView.setFitHeight(36);
-        imageView.setFitWidth(36);
+        imageView.setFitHeight(IMAGE_SIZE);
+        imageView.setFitWidth(IMAGE_SIZE);
         cell.getChildren().add(imageView);
     }
 
@@ -104,8 +105,8 @@ public class GraphicUi {
         oldCell.getChildren().remove(imageView);
         newCell.getChildren().add(imageView);
 
-        double fromX = (oldLocation.col() - newLocation.col()) * 40;
-        double fromY = (oldLocation.row() - newLocation.row()) * 40;
+        double fromX = (oldLocation.col() - newLocation.col()) * CELL_SIZE;
+        double fromY = (oldLocation.row() - newLocation.row()) * CELL_SIZE;
 
         imageView.setTranslateX(fromX);
         imageView.setTranslateY(fromY);

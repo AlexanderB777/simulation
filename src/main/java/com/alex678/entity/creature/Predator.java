@@ -25,7 +25,7 @@ public final class Predator extends Creature {
     public Location getNewLocation(World world) {
         List<PathFinder.Point> path = PathFinder.findPath(world, location, Herbivore.class, getToAvoid());
         if (path != null && path.size() > 1) {
-            return path.get(1).getLocation();
+            return path.get(1).location();
         }
         return null;
     }

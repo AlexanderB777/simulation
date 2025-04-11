@@ -25,6 +25,9 @@ public class Service {
     }
 
     public boolean makeMove(Creature creature, Location newLocation) {
+        if (newLocation == null) {
+            return false;
+        }
         Optional<Entity> optionalNewLocationEntity = Optional.ofNullable(world.getEntity(newLocation));
         if (optionalNewLocationEntity.isEmpty()) {
             moveCreatureOnFreeCell(creature, newLocation);
@@ -77,9 +80,17 @@ public class Service {
     private List<Location> getNeighbours(Location location) {
         List<Location> neighbours = new ArrayList<>();
         for (int[] direction : DIRECTIONS) {
-            neighbours.add(new Location(location.row() + direction[0], location.col() + direction[1]));
+            Location neighbour = new Location(location.row() + direction[0], location.col() + direction[1]);
+            if (isValidLocation(neighbour)) {
+                neighbours.add(neighbour);
+            }
         }
         return neighbours;
+    }
+
+    private boolean isValidLocation(Location location) {
+        return (location.row() >= 0 && location.row() < world.getRows()
+                && location.col() >= 0 && location.col() < world.getColumns());
     }
 
     private void spawnEntity(Class<? extends Entity> aClass) {
