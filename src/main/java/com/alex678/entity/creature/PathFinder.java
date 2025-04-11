@@ -3,8 +3,6 @@ package com.alex678.entity.creature;
 import com.alex678.World;
 import com.alex678.entity.Entity;
 import com.alex678.entity.Location;
-import com.alex678.entity.Rock;
-import com.alex678.entity.Tree;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,7 +17,8 @@ public class PathFinder {
         private Point parent;
     }
 
-    public static List<Point> findPath(World world, Location startLocation) {
+    public static List<Point> findPath(World world, Location startLocation,
+                                       Class<? extends Entity> toHunt, List<Class<? extends Entity>> toAvoid) {
         List<Location> visited = new ArrayList<>();
         Queue<Point> queue = new LinkedList<>();
 
@@ -30,19 +29,18 @@ public class PathFinder {
             Point current = queue.poll();
             Entity currentEntity = world.getEntity(current.location);
 
-            if (currentEntity instanceof Herbivore
-                    && !(current.location.getRow() == startLocation.getRow()
-                    && current.location.getCol() == startLocation.getCol())) {
+            if (currentEntity != null && toHunt.isAssignableFrom(currentEntity.getClass())
+                    && !current.location.equals(startLocation)) {
                 return buildPath(current);
             }
 
             for (int[] direction : World.DIRECTIONS) {
                 Location newLocation = new Location(
-                        current.location.getRow() + direction[0],
-                        current.location.getCol() + direction[1]
+                        current.location.row() + direction[0],
+                        current.location.col() + direction[1]
                 );
 
-                if (isValidMove(world, visited, newLocation)) {
+                if (isValidMove(world, visited, newLocation, toAvoid)) {
                     visited.add(newLocation);
                     queue.add(new Point(newLocation, current));
                 }
@@ -51,15 +49,17 @@ public class PathFinder {
         return null;
     }
 
-    private static boolean isValidMove(World world, List<Location> visited, Location location) {
-        if (location.getRow() < 0
-                || location.getRow() >= world.getRows()
-                || location.getCol() < 0
-                || location.getCol() >= world.getColumns()) return false;
-        if (visited.contains(location)) return false;
+    private static boolean isValidMove(World world, List<Location> visited,
+                                       Location newLocation, List<Class<? extends Entity>> toAvoid) {
+        if (newLocation.row() < 0
+                || newLocation.row() >= world.getRows()
+                || newLocation.col() < 0
+                || newLocation.col() >= world.getColumns()) return false;
+        if (visited.contains(newLocation)) return false;
 
-        Entity currentEntity = world.getEntity(location);
-        return !(currentEntity instanceof Tree || currentEntity instanceof Rock);
+        Optional<Entity> currentEntity = Optional.ofNullable(world.getEntity(newLocation));
+
+        return currentEntity.isEmpty() || !(toAvoid.contains(currentEntity.get().getClass()));
     }
 
     private static List<Point> buildPath(Point end) {

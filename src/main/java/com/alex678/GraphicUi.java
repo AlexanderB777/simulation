@@ -19,6 +19,7 @@ public class GraphicUi {
     @Getter
     private final VBox root;
     private final Text text;
+    private final Text textAbout;
     private final GridPane grid;
     private final StackPane[][] board;
     private final HBox buttonBox;
@@ -37,6 +38,7 @@ public class GraphicUi {
     public GraphicUi() {
         root = new VBox();
         text = new Text("Игровое поле");
+        textAbout = new Text("");
         grid = new GridPane();
         board = new StackPane[10][25];
         for (int row = 0; row < 10; row++) {
@@ -53,7 +55,7 @@ public class GraphicUi {
         button2 = new Button("Перезапустить");
         button3 = new Button("Запустить симуляцию");
         buttonBox.getChildren().addAll(button1, button2, button3);
-        root.getChildren().addAll(text, grid, buttonBox);
+        root.getChildren().addAll(text, grid, buttonBox, textAbout);
     }
 
     public void renderWorld(World world) {
@@ -71,7 +73,7 @@ public class GraphicUi {
         }
     }
 
-    private void putEntityOnBoard(Entity entity) {
+    public void putEntityOnBoard(Entity entity) {
         Location location = entity.getLocation();
         StackPane cell = getCell(location);
         ImageView imageView = new ImageView(entity.getImage());
@@ -81,10 +83,10 @@ public class GraphicUi {
     }
 
     private StackPane getCell(Location location) {
-        return board[location.getRow() - 1][location.getCol() - 1];
+        return board[location.row()][location.col()];
     }
 
-    public void moveCreature(Creature creature, Location oldLocation, Location newLocation) {
+    public void moveCreature(Location oldLocation, Location newLocation) {
         StackPane oldCell = getCell(oldLocation);
         StackPane newCell = getCell(newLocation);
 
@@ -102,8 +104,8 @@ public class GraphicUi {
         oldCell.getChildren().remove(imageView);
         newCell.getChildren().add(imageView);
 
-        double fromX = (oldLocation.getCol() - newLocation.getCol()) * 40;
-        double fromY = (oldLocation.getRow() - newLocation.getRow()) * 40;
+        double fromX = (oldLocation.col() - newLocation.col()) * 40;
+        double fromY = (oldLocation.row() - newLocation.row()) * 40;
 
         imageView.setTranslateX(fromX);
         imageView.setTranslateY(fromY);
