@@ -10,12 +10,12 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         Game game = new Game();
         GraphicUi ui = new GraphicUi();
         GameController controller = new GameController(game, ui);
 
-        Scene scene = new Scene(ui.getRoot(), 1000, 450);
+        Scene scene = new Scene(ui.getRoot(), 1000, 470);
         stage.setTitle("Game Simulation");
         stage.setScene(scene);
         stage.show();
