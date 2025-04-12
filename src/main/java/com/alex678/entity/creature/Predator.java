@@ -6,9 +6,11 @@ import com.alex678.entity.Location;
 import com.alex678.entity.Rock;
 import com.alex678.entity.Tree;
 import javafx.scene.image.Image;
+import lombok.ToString;
 
 import java.util.List;
 
+@ToString
 public final class Predator extends Creature {
 
     @Override

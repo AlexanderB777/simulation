@@ -3,9 +3,11 @@ package com.alex678.entity.creature;
 import com.alex678.World;
 import com.alex678.entity.*;
 import javafx.scene.image.Image;
+import lombok.ToString;
 
 import java.util.List;
 
+@ToString
 public final class Herbivore extends Creature implements Spawnable {
 
     public Herbivore(Location location) {

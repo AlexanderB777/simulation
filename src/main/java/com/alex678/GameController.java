@@ -7,6 +7,7 @@ import javafx.animation.Timeline;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class GameController {
     private final Game game;
@@ -30,10 +31,20 @@ public class GameController {
 
     private void makeMoves() {
         for (Creature creature : new ArrayList<>(world.getCreatures())) {
-            Location oldLocation = creature.getLocation();
-            Location newLocation = creature.getNewLocation(world);
-            if (service.makeMove(creature, newLocation)) {
-                graphicUI.moveCreature(oldLocation, newLocation);
+            if (creature.isAlive())
+            {
+                Location oldLocation = creature.getLocation();
+                Location newLocation = creature.getNewLocation(world);
+                ServiceMakeMoveReport report = service.makeMove(creature, newLocation);
+                if (report.isMoveMade()) {
+//                    if (report.killedEntity() != null) {
+//                        graphicUI.removeEntity(report.killedEntity());
+//                    }
+                    if (report.spawnedEntity() != null) {
+                        graphicUI.putEntityOnBoard(report.spawnedEntity());
+                    }
+                    graphicUI.moveCreature(oldLocation, newLocation);
+                }
             }
         }
     }

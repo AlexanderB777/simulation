@@ -3,12 +3,15 @@ package com.alex678;
 import com.alex678.entity.Entity;
 import com.alex678.entity.Location;
 import com.alex678.entity.creature.Creature;
+import com.alex678.entity.creature.Herbivore;
 import com.alex678.entity.creature.Spawnable;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+@Slf4j
 public class Service {
     Random rand = new Random();
     private final Game game;
@@ -24,24 +27,45 @@ public class Service {
         spawnableLocations = getSpawnableLocations(world);
     }
 
-    public boolean makeMove(Creature creature, Location newLocation) {
+    public ServiceMakeMoveReport makeMove(Creature creature, Location newLocation) {
+        log.info("Вызван метод: makeMove(Creature creature, Location newLocation) )");
+        log.info("У сущности: {}", creature.getLocation());
+        log.info("На локацию: {}", newLocation);
+        Location oldLocation = creature.getLocation();
+
         if (newLocation == null) {
-            return false;
+            return ServiceMakeMoveReport.builder().entity(creature).oldLocation(oldLocation).build();
         }
         Optional<Entity> optionalNewLocationEntity = Optional.ofNullable(world.getEntity(newLocation));
         if (optionalNewLocationEntity.isEmpty()) {
             moveCreatureOnFreeCell(creature, newLocation);
-            return true;
+            return ServiceMakeMoveReport
+                    .builder()
+                    .entity(creature)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .isMoveMade(true)
+                    .build();
         }
         Entity newLocationEntity = optionalNewLocationEntity.get();
         if (creature.getToAvoid().contains(newLocationEntity.getClass())) {
-            return false;
+            return ServiceMakeMoveReport.builder().entity(creature).oldLocation(oldLocation).build();
         }
         if (newLocationEntity instanceof Spawnable) {
             world.removeEntity(newLocationEntity);
+            if (newLocationEntity instanceof Herbivore herbivore) {
+                herbivore.setAlive(false);
+            }
             moveCreatureOnFreeCell(creature, newLocation);
-            spawnEntity(newLocationEntity.getClass());
-            return true;
+            Entity spawnedEntity = spawnEntity(newLocationEntity.getClass());
+            return ServiceMakeMoveReport
+                    .builder()
+                    .entity(creature)
+                    .oldLocation(oldLocation)
+                    .newLocation(newLocation)
+                    .killedEntity(newLocationEntity)
+                    .spawnedEntity(spawnedEntity)
+                    .isMoveMade(true).build();
         }
         throw new RuntimeException("Creature is not spawnable and not avoidable");
     }
@@ -93,13 +117,14 @@ public class Service {
                 && location.col() >= 0 && location.col() < world.getColumns());
     }
 
-    private void spawnEntity(Class<? extends Entity> aClass) {
+    private Entity spawnEntity(Class<? extends Entity> aClass) {
         Location location = getLocationForSpawn();
         try {
             Constructor<? extends Entity> constructor = aClass.getConstructor(Location.class);
             Entity newEntity = constructor.newInstance(location);
             world.putEntity(newEntity);
             updateSpawnableLocations(newEntity);
+            return newEntity;
         } catch (NoSuchMethodException
                  | IllegalAccessException
                  | InstantiationException

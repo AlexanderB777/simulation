@@ -34,8 +34,8 @@ public class World {
 
     public void removeEntity(Entity entity) {
         entitiesMap.remove(entity.getLocation());
-        if (entity instanceof Creature) {
-            creatures.remove((Creature) entity);
+        if (entity instanceof Creature creature) {
+            creatures.remove(creature);
         }
     }
 
